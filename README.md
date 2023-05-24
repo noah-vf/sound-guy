@@ -19,3 +19,5 @@ This project started with an impulse purchase of a bunch of MSGEQ7 IC's from an 
 # Software: 
 
 -Arduino IDE 
+
+-MSGEQ7 Library from https://github.com/NicoHood
