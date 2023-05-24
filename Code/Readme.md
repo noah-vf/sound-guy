@@ -1,4 +1,4 @@
-------------V1 NOTES --------------
+## ------------V1 NOTES --------------
 
 This is the first complete version of the matrix bluetooth vis program. It contains a modified version of the standard V1 
 shiftRegDisplay library. Set up for V0.1 matrix PCB, with 1088AS display modules. 
