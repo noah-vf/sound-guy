@@ -12,10 +12,12 @@ This project started with an impulse purchase of a bunch of MSGEQ7 IC's from an 
 
 -1088-style 8x8 LED Matrix Displays 
 
--ATTINY84 microcontroller @ 8MHZ (internal
+-ATTINY84 microcontroller @ 8MHZ (internal)
 
 -MH-M28 Bluetooth Audio Receiver
 
 # Software: 
 
 -Arduino IDE 
+
+-MSGEQ7 Library from https://github.com/NicoHood
