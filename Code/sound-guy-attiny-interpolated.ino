@@ -1,6 +1,7 @@
 /*    THIS LIBRARY SUPPORTS INTERPOLATION
-     Shift Register Audio Display, v1 
+     Shift Register Audio Display, v2 
      Uses shiftRegDisplay and MSGEQ7 classes to generate a graphic EQ 
+     This version is rotated right for hardware version 2
      To do: AGC?
 */
 #include "MSGEQ7.h"
@@ -79,7 +80,9 @@ int arrayAverage(byte inputArray[20]) {
 
 void loop() {   //If a new reading is available, get it, map it, push it to display. If not, keep updating display.
   bool newReading = MSGEQ7.read(MSGEQ7_INTERVAL);
-  if (newReading) {
+  byte calcValues[8];
+
+  if (newReading) {               // Take new measurement 
    byte bass = MSGEQ7.get(MSGEQ7_0);
     bass = mapNoise(bass);
     byte bass2 = MSGEQ7.get(MSGEQ7_1);
@@ -96,16 +99,29 @@ void loop() {   //If a new reading is available, get it, map it, push it to disp
     high = mapNoise(high);
     
     int  scaleFactor = 1;
+    
 
-    disp.colValues[7] = byte(valueMap(scaleFactor*bass));							//Interpolation of 7 bands into 8
-    disp.colValues[6] = byte(valueMap(int((0.133*bass) + (0.857*bass2))));
-    disp.colValues[5] = byte(valueMap(int((0.286*bass2) + (0.714*low))));
-    disp.colValues[4] = byte(valueMap(int((0.429*low)+ (0.571*low2))));
-    disp.colValues[3] = byte(valueMap(int((0.572*low2) + (0.428*mid))));
-    disp.colValues[2] = byte(valueMap(int((0.715*mid) + (0.285*mid2))));
-    disp.colValues[1] = byte(valueMap(int((0.858*mid2) + (0.132*high))));
-    disp.colValues[0]= byte(valueMap(scaleFactor*high));
+    calcValues[7] = byte(valueMap(scaleFactor*bass));							//Interpolation of 7 bands into 8
+    calcValues[6] = byte(valueMap(int((0.133*bass) + (0.857*bass2))));
+    calcValues[5] = byte(valueMap(int((0.286*bass2) + (0.714*low))));
+    calcValues[4] = byte(valueMap(int((0.429*low)+ (0.571*low2))));
+    calcValues[3] = byte(valueMap(int((0.572*low2) + (0.428*mid))));
+    calcValues[2] = byte(valueMap(int((0.715*mid) + (0.285*mid2))));
+    calcValues[1] = byte(valueMap(int((0.858*mid2) + (0.132*high))));
+    calcValues[0]= byte(valueMap(scaleFactor*high));
 
    }
+
+   
+  for (int y = 0; y < 8; y++){                      //Rotate the display right. For every new column value, derive it from unrotated column values
+    byte newValue = 0; 
+    for (int j = 0; j<8; j++){                      
+      if ((calcValues[7-j] & (1<<y)) > 0) {
+        newValue = newValue + (1<<j);
+      }
+    }
+    disp.colValues[y] = newValue;
+  }
+
  disp.updateDisplay();
 }
