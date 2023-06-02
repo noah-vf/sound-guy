@@ -7,18 +7,6 @@
 #include "MSGEQ7.h"
 #include "shiftRegDisplayATT.h"
 
-// Pinmap for Arduino Uno. Uncomment to Enable
-/*
-#define pinReset A1
-#define pinStrobe A2
-#define pinAnalog A3
-#define pinLatch 8
-#define pinColClock 9
-#define pinColData 10
-#define pinRowClock 12
-#define pinRowData 13
-*/
-// Pinmap for ATTiny84. Uncomment to enable.
 
 #define pinReset 7
 #define pinStrobe 1
@@ -28,7 +16,6 @@
 #define pinColData 6
 #define pinRowClock 9
 #define pinRowData 10
-
 
 
 #define MSGEQ7_INTERVAL ReadsPerSecond(60)
@@ -44,7 +31,7 @@ void setup() {
 
 }
 
-byte valueMap(byte inputValue) { //Map analog readings to a number that corresponds to all the LEDs in a certain column
+byte valueMap(byte inputValue) { //Map analog readings to a number that corresponds to all the LEDs in a certain column. Byte -> "Row of LEDS".
   if (inputValue<32){
     return(1);
   }
@@ -73,11 +60,6 @@ byte valueMap(byte inputValue) { //Map analog readings to a number that correspo
 
 
 
-int arrayAverage(byte inputArray[20]) {   
-  int average = (inputArray[0] + inputArray[1]+ inputArray[2]+ inputArray[3]+ inputArray[4]+ inputArray[5]+ inputArray[6]+ inputArray[7]+ inputArray[8]+ inputArray[9]+ inputArray[10]+ inputArray[11]+ inputArray[12]+ inputArray[13]+ inputArray[14]+ inputArray[15]+ inputArray[16]+ inputArray[17]+ inputArray[18]+ inputArray[19])/20;
-  return(average);
-}
-
 void loop() {   //If a new reading is available, get it, map it, push it to display. If not, keep updating display.
   bool newReading = MSGEQ7.read(MSGEQ7_INTERVAL);
   byte calcValues[8];
@@ -98,9 +80,6 @@ void loop() {   //If a new reading is available, get it, map it, push it to disp
     byte high = MSGEQ7.get(MSGEQ7_6);
     high = mapNoise(high);
     
-    int  scaleFactor = 1;
-    
-
     calcValues[7] = byte(valueMap(scaleFactor*bass));							//Interpolation of 7 bands into 8
     calcValues[6] = byte(valueMap(int((0.133*bass) + (0.857*bass2))));
     calcValues[5] = byte(valueMap(int((0.286*bass2) + (0.714*low))));
@@ -120,7 +99,7 @@ void loop() {   //If a new reading is available, get it, map it, push it to disp
         newValue = newValue + (1<<j);
       }
     }
-    disp.colValues[y] = newValue;
+    disp.colValues[y] = newValue;               
   }
 
  disp.updateDisplay();
